@@ -9,11 +9,11 @@ fill your database with demo records
 
 e. g.
 
-  FillDB.load(10, 100, 5, 40, 1000)
+  FillDB.load(50, 1000, 20, 40, 1000)
 
 =end
 
-  def self.load( agents, customers, groups, organizations, tickets )
+  def self.load(agents, customers, groups, organizations, tickets, nice = 0.5)
     puts 'load db with:'
     puts " agents:#{agents}"
     puts " customers:#{customers}"
@@ -27,14 +27,11 @@ e. g.
     # organizations
     organization_pool = []
     if organizations && !organizations.zero?
-
-      ActiveRecord::Base.transaction do
-
-        (1..organizations).each {
-          organization = Organization.create( name: 'FillOrganization::' + rand(999_999).to_s, active: true )
+      (1..organizations).each do
+        ActiveRecord::Base.transaction do
+          organization = Organization.create!(name: "FillOrganization::#{rand(999_999)}", active: true)
           organization_pool.push organization
-        }
-
+        end
       end
     else
       organization_pool = Organization.where(active: true)
@@ -44,12 +41,11 @@ e. g.
     # create agents
     agent_pool = []
     if agents && !agents.zero?
-      roles = Role.where( name: [ 'Agent'] )
+      roles = Role.where(name: [ 'Agent'])
       groups_all = Group.all
 
-      ActiveRecord::Base.transaction do
-
-        (1..agents).each {
+      (1..agents).each do
+        ActiveRecord::Base.transaction do
           suffix = rand(99_999).to_s
           user = User.create_or_update(
             login: "filldb-agent-#{suffix}",
@@ -61,9 +57,9 @@ e. g.
             roles: roles,
             groups: groups_all,
           )
+          sleep nice
           agent_pool.push user
-        }
-
+        end
       end
     else
       agent_pool = Role.where(name: 'Agent').first.users.where(active: true)
@@ -73,12 +69,11 @@ e. g.
     # create customer
     customer_pool = []
     if customers && !customers.zero?
-      roles = Role.where( name: [ 'Customer'] )
+      roles = Role.where(name: [ 'Customer'])
       groups_all = Group.all
 
-      ActiveRecord::Base.transaction do
-
-        (1..customers).each {
+      (1..customers).each do
+        ActiveRecord::Base.transaction do
           suffix = rand(99_999).to_s
           organization = nil
           if !organization_pool.empty? && rand(2) == 1
@@ -94,9 +89,9 @@ e. g.
             organization: organization,
             roles: roles,
           )
+          sleep nice
           customer_pool.push user
-        }
-
+        end
       end
     else
       customer_pool = Role.where(name: 'Customer').first.users.where(active: true)
@@ -106,21 +101,19 @@ e. g.
     # create groups
     group_pool = []
     if groups && !groups.zero?
-      puts "1..#{groups}"
 
-      ActiveRecord::Base.transaction do
-
-        (1..groups).each {
-          group = Group.create( name: 'FillGroup::' + rand(999_999).to_s, active: true )
+      (1..groups).each do
+        ActiveRecord::Base.transaction do
+          group = Group.create!(name: "FillGroup::#{rand(999_999)}", active: true)
           group_pool.push group
-          Role.where(name: 'Agent').first.users.where(active: true).each { |user|
+          Role.where(name: 'Agent').first.users.where(active: true).each do |user|
             user_groups = user.groups
             user_groups.push group
             user.groups = user_groups
-            user.save
-          }
-        }
-
+            user.save!
+          end
+          sleep nice
+        end
       end
     else
       group_pool = Group.where(active: true)
@@ -132,14 +125,12 @@ e. g.
     state_pool = Ticket::State.all
 
     if tickets && !tickets.zero?
-
-      ActiveRecord::Base.transaction do
-
-        (1..tickets).each {
+      (1..tickets).each do
+        ActiveRecord::Base.transaction do
           customer = customer_pool[ rand(customer_pool.length - 1) ]
           agent    = agent_pool[ rand(agent_pool.length - 1) ]
-          ticket = Ticket.create(
-            title: 'some title äöüß' + rand(999_999).to_s,
+          ticket = Ticket.create!(
+            title: "some title äöüß#{rand(999_999)}",
             group: group_pool[ rand(group_pool.length - 1) ],
             customer: customer,
             owner: agent,
@@ -148,13 +139,14 @@ e. g.
             updated_by_id: agent.id,
             created_by_id: agent.id,
           )
+
           # create article
-          article = Ticket::Article.create(
+          article = Ticket::Article.create!(
             ticket_id: ticket.id,
             from: customer.email,
             to: 'some_recipient@example.com',
-            subject: 'some subject' + rand(999_999).to_s,
-            message_id: 'some@id-' + rand(999_999).to_s,
+            subject: "some subject#{rand(999_999)}",
+            message_id: "some@id-#{rand(999_999)}",
             body: 'some message ...',
             internal: false,
             sender: Ticket::Article::Sender.where(name: 'Customer').first,
@@ -162,9 +154,10 @@ e. g.
             updated_by_id: agent.id,
             created_by_id: agent.id,
           )
-        }
+          puts " Ticket #{ticket.number} created"
+          sleep nice
+        end
       end
-
     end
   end
 end

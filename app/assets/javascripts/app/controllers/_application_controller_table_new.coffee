@@ -168,16 +168,24 @@ class App.ControllerTable extends App.Controller
     $(window).off 'resize.table', @onResize
 
   update: (params) =>
-    console.log('params', params)
-    for key, value of params
-      @[key] = value
-
+    console.log('update params', params)
     if params.sync is true
+      for key, value of params
+        @[key] = value
       return @render()
-    @renderQueue()
+    @renderQueue(params)
 
-  renderQueue: =>
-    App.QueueManager.add('tableRender', @render)
+  renderQueue: (params) =>
+    localeRender = =>
+      console.log('LR', params)
+      for key, value of params
+        console.log('LRK', key, value)
+        @[key] = value
+      @render()
+    App.QueueManager.add('tableRender', localeRender)
+    if params && params.objects
+      @objects = []
+      console.log('RESET @objects')
     App.QueueManager.run('tableRender')
 
   render: =>
@@ -254,7 +262,7 @@ class App.ControllerTable extends App.Controller
     )
 
   renderTableFull: (rows) =>
-    console.log('renderTableFull', @orderBy, @orderDirection)
+    console.log('renderTableFull', @orderBy, @orderDirection, @objects)
     @tableHeaders()
     @sortList()
     bulkIds = @getBulkSelected()
@@ -408,14 +416,16 @@ class App.ControllerTable extends App.Controller
       columnsLength++
     groupLast = ''
     tableBody = []
+    @objects = @objects.slice(0, 200)
     for object in @objects
-      position++
-      if @groupBy
-        groupByName = App.viewPrint(object, @groupBy, @attributesList)
-        if groupLast isnt groupByName
-          groupLast = groupByName
-          tableBody.push @renderTableGroupByRow(object, position, groupByName)
-      tableBody.push @renderTableRow(object, position)
+      if object
+        position++
+        if @groupBy
+          groupByName = App.viewPrint(object, @groupBy, @attributesList)
+          if groupLast isnt groupByName
+            groupLast = groupByName
+            tableBody.push @renderTableGroupByRow(object, position, groupByName)
+        tableBody.push @renderTableRow(object, position)
     tableBody
 
   renderTableGroupByRow: (object, position, groupByName) =>
@@ -552,6 +562,12 @@ class App.ControllerTable extends App.Controller
           localObjects = _.sortBy(
             @objects
             (item) ->
+
+              # error handling
+              if !item
+                console.log("Got empty object in order by with header _.sortBy", @objects)
+                return ''
+
               # if we need to sort translated col.
               if header.translate
                 return App.i18n.translateInline(item[header.name])
@@ -586,6 +602,12 @@ class App.ControllerTable extends App.Controller
             localObjects = _.sortBy(
               @objects
               (item) ->
+
+                # error handling
+                if !item
+                  console.log("Got empty object in order by in attribute _.sortBy", @objects)
+                  return ''
+
                 # if we need to sort translated col.
                 if attribute.translate
                   return App.i18n.translateInline(item[attribute.name])
