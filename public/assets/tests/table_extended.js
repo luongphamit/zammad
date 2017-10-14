@@ -312,7 +312,6 @@ test('table new - initial list', function() {
   equal(el.find('tbody > tr:nth-child(2) > td:first').text().trim(), '1 niedrig', 'check row 1')
   equal(el.find('tbody > tr:nth-child(3) > td').length, 0, 'check row 3')
 
-
   $('#table').append('<hr><h1>table group by with data</h1><div id="table-new2"></div>')
   var el = $('#table-new2')
 
@@ -457,5 +456,221 @@ test('table new - initial list', function() {
   equal(el.find('tbody > tr:nth-child(5) > td:nth-child(2)').text().trim(), '10.06.2014', 'check row 5')
   equal(el.find('tbody > tr:nth-child(5) > td:nth-child(3)').text().trim(), 'true', 'check row 5')
   equal(el.find('tbody > tr:nth-child(6) > td').length, 0, 'check row 6')
+
+  App.TicketPriority.refresh([
+    {
+      id:         1,
+      name:       '1 low',
+      note:       'some note',
+      active:     true,
+      created_at: '2014-06-10T11:17:34.000Z',
+    },
+    {
+      id:         2,
+      name:       '2 normal',
+      note:       'some note',
+      active:     true,
+      created_at: '2014-06-10T10:17:30.000Z',
+    },
+    {
+      id:         3,
+      name:       '3 high',
+      note:       'some other note',
+      active:     true,
+      created_at: '2014-06-10T10:17:38.000Z',
+    },
+    {
+      id:         4,
+      name:       '4 high',
+      note:       'some other note',
+      active:     true,
+      created_at: '2014-06-10T10:17:39.000Z',
+    },
+    {
+      id:         5,
+      name:       '5 high',
+      note:       'some note',
+      active:     true,
+      created_at: '2014-06-10T10:17:39.000Z',
+    },
+  ], {clear: true})
+
+  result = table.update({sync: true, objects: App.TicketPriority.search({sortBy:'name', order: 'ASC'})})
+  equal(result[0], 'fullRender.lenghtChanged')
+
+  equal(el.find('table > thead > tr').length, 1, 'row count')
+  equal(el.find('table > thead > tr > th:nth-child(1)').text().trim(), 'Name', 'check header')
+  equal(el.find('table > thead > tr > th:nth-child(2)').text().trim(), 'Erstellt', 'check header')
+  equal(el.find('table > thead > tr > th:nth-child(3)').text().trim(), 'Aktiv', 'check header')
+  equal(el.find('tbody > tr:nth-child(1) > td').length, 1, 'check row 1')
+  equal(el.find('tbody > tr:nth-child(1) > td:first').text().trim(), 'some note', 'check row 1')
+  equal(el.find('tbody > tr:nth-child(2) > td').length, 3, 'check row 2')
+  equal(el.find('tbody > tr:nth-child(2) > td:first').text().trim(), '1 niedrig', 'check row 2')
+  equal(el.find('tbody > tr:nth-child(2) > td:nth-child(2)').text().trim(), '10.06.2014', 'check row 2')
+  equal(el.find('tbody > tr:nth-child(2) > td:nth-child(3)').text().trim(), 'true', 'check row 2')
+  equal(el.find('tbody > tr:nth-child(3) > td').length, 3, 'check row 3')
+  equal(el.find('tbody > tr:nth-child(3) > td:first').text().trim(), '2 normal', 'check row 3')
+  equal(el.find('tbody > tr:nth-child(3) > td:nth-child(2)').text().trim(), '10.06.2014', 'check row 3')
+  equal(el.find('tbody > tr:nth-child(3) > td:nth-child(3)').text().trim(), 'true', 'check row 3')
+  equal(el.find('tbody > tr:nth-child(4) > td').length, 3, 'check row 4')
+  equal(el.find('tbody > tr:nth-child(4) > td:first').text().trim(), '5 high', 'check row 4')
+  equal(el.find('tbody > tr:nth-child(4) > td:nth-child(2)').text().trim(), '10.06.2014', 'check row 4')
+  equal(el.find('tbody > tr:nth-child(4) > td:nth-child(3)').text().trim(), 'true', 'check row 4')
+  equal(el.find('tbody > tr:nth-child(5) > td').length, 1, 'check row 5')
+  equal(el.find('tbody > tr:nth-child(5) > td:first').text().trim(), 'some other note', 'check row 5')
+  equal(el.find('tbody > tr:nth-child(6) > td:first').text().trim(), '3 hoch', 'check row 6')
+  equal(el.find('tbody > tr:nth-child(6) > td:nth-child(2)').text().trim(), '10.06.2014', 'check row 6')
+  equal(el.find('tbody > tr:nth-child(6) > td:nth-child(3)').text().trim(), 'true', 'check row 6')
+  equal(el.find('tbody > tr:nth-child(7) > td').length, 3, 'check row 7')
+  equal(el.find('tbody > tr:nth-child(7) > td:first').text().trim(), '4 high', 'check row 7')
+  equal(el.find('tbody > tr:nth-child(7) > td:nth-child(2)').text().trim(), '10.06.2014', 'check row 7')
+  equal(el.find('tbody > tr:nth-child(7) > td:nth-child(3)').text().trim(), 'true', 'check row 7')
+  equal(el.find('tbody > tr:nth-child(8) > td').length, 0, 'check row 8')
+
+  $('#table').append('<hr><h1>table with large data</h1><div id="table-new3"></div>')
+  var el = $('#table-new3')
+
+  var objects = [];
+  var created_at = Date.parse('2014-06-10T11:17:34.000Z')
+
+  for (i = 0; i < 1000; i++) {
+    local_created_at = new Date(created_at - (1000 * 60 * 60 * 24 * i)).toISOString()
+    item = {
+      id:         i,
+      name:       i + ' prio',
+      note:       'some note',
+      active:     true,
+      created_at: local_created_at,
+    }
+    objects.push(item)
+  }
+
+  App.TicketPriority.refresh(objects.reverse(), {clear: true})
+
+  var table = new App.ControllerTable({
+    tableId:            'large_table_test',
+    el:                 el,
+    overviewAttributes: ['name', 'created_at', 'active'],
+    model:              App.TicketPriority,
+    objects:            App.TicketPriority.all(),
+    checkbox:           false,
+    radio:              false,
+  })
+
+  equal(el.find('table > thead > tr').length, 1, 'row count')
+  equal(el.find('table > thead > tr > th:nth-child(1)').text().trim(), 'Name', 'check header')
+  equal(el.find('table > thead > tr > th:nth-child(2)').text().trim(), 'Erstellt', 'check header')
+  equal(el.find('table > thead > tr > th:nth-child(3)').text().trim(), 'Aktiv', 'check header')
+  equal(el.find('tbody > tr:nth-child(1) > td').length, 3, 'check row 1')
+  equal(el.find('tbody > tr:nth-child(1) > td:first').text().trim(), '999 prio', 'check row 1')
+  equal(el.find('tbody > tr:nth-child(1) > td:nth-child(2)').text().trim(), '15.09.2011', 'check row 1')
+  equal(el.find('tbody > tr:nth-child(1) > td:nth-child(3)').text().trim(), 'true', 'check row 1')
+  equal(el.find('tbody > tr:nth-child(2) > td').length, 3, 'check row 2')
+  equal(el.find('tbody > tr:nth-child(2) > td:first').text().trim(), '998 prio', 'check row 2')
+  equal(el.find('tbody > tr:nth-child(2) > td:nth-child(2)').text().trim(), '16.09.2011', 'check row 2')
+  equal(el.find('tbody > tr:nth-child(2) > td:nth-child(3)').text().trim(), 'true', 'check row 2')
+  equal(el.find('tbody > tr:nth-child(3) > td').length, 3, 'check row 3')
+  equal(el.find('tbody > tr:nth-child(3) > td:first').text().trim(), '997 prio', 'check row 3')
+  equal(el.find('tbody > tr:nth-child(3) > td:nth-child(2)').text().trim(), '17.09.2011', 'check row 3')
+  equal(el.find('tbody > tr:nth-child(3) > td:nth-child(3)').text().trim(), 'true', 'check row 3')
+  equal(el.find('tbody > tr').length, 100)
+  equal(el.find('tbody > tr:nth-child(101) > td').length, 0)
+
+  equal(el.find('.js-tableHead[data-column-key="name"] .js-sort .icon').length, 0)
+  el.find('.js-tableHead[data-column-key="name"] .js-sort').click()
+
+  equal(el.find('table > thead > tr').length, 1, 'row count')
+  equal(el.find('table > thead > tr > th:nth-child(1)').text().trim(), 'Name', 'check header')
+  equal(el.find('table > thead > tr > th:nth-child(2)').text().trim(), 'Erstellt', 'check header')
+  equal(el.find('table > thead > tr > th:nth-child(3)').text().trim(), 'Aktiv', 'check header')
+  equal(el.find('tbody > tr:nth-child(1) > td').length, 3, 'check row 1')
+  equal(el.find('tbody > tr:nth-child(1) > td:first').text().trim(), '0 prio', 'check row 1')
+  equal(el.find('tbody > tr:nth-child(1) > td:nth-child(2)').text().trim(), '10.06.2014', 'check row 1')
+  equal(el.find('tbody > tr:nth-child(1) > td:nth-child(3)').text().trim(), 'true', 'check row 1')
+  equal(el.find('tbody > tr:nth-child(2) > td').length, 3, 'check row 2')
+  equal(el.find('tbody > tr:nth-child(2) > td:first').text().trim(), '1 prio', 'check row 2')
+  equal(el.find('tbody > tr:nth-child(2) > td:nth-child(2)').text().trim(), '09.06.2014', 'check row 2')
+  equal(el.find('tbody > tr:nth-child(2) > td:nth-child(3)').text().trim(), 'true', 'check row 2')
+  equal(el.find('tbody > tr:nth-child(3) > td').length, 3, 'check row 3')
+  equal(el.find('tbody > tr:nth-child(3) > td:first').text().trim(), '10 prio', 'check row 3')
+  equal(el.find('tbody > tr:nth-child(3) > td:nth-child(2)').text().trim(), '31.05.2014', 'check row 3')
+  equal(el.find('tbody > tr:nth-child(3) > td:nth-child(3)').text().trim(), 'true', 'check row 3')
+  equal(el.find('tbody > tr').length, 100)
+  equal(el.find('tbody > tr:nth-child(101) > td').length, 0)
+
+  equal(el.find('.js-tableHead[data-column-key="name"] .js-sort .icon.icon-arrow-up').length, 1)
+  equal(el.find('.js-tableHead[data-column-key="name"] .js-sort .icon.icon-arrow-down').length, 0)
+  el.find('.js-tableHead[data-column-key="name"] .js-sort').click()
+
+  equal(el.find('table > thead > tr').length, 1, 'row count')
+  equal(el.find('table > thead > tr > th:nth-child(1)').text().trim(), 'Name', 'check header')
+  equal(el.find('table > thead > tr > th:nth-child(2)').text().trim(), 'Erstellt', 'check header')
+  equal(el.find('table > thead > tr > th:nth-child(3)').text().trim(), 'Aktiv', 'check header')
+  equal(el.find('tbody > tr:nth-child(1) > td').length, 3, 'check row 1')
+  equal(el.find('tbody > tr:nth-child(1) > td:first').text().trim(), '999 prio', 'check row 1')
+  equal(el.find('tbody > tr:nth-child(1) > td:nth-child(2)').text().trim(), '15.09.2011', 'check row 1')
+  equal(el.find('tbody > tr:nth-child(1) > td:nth-child(3)').text().trim(), 'true', 'check row 1')
+  equal(el.find('tbody > tr:nth-child(2) > td').length, 3, 'check row 2')
+  equal(el.find('tbody > tr:nth-child(2) > td:first').text().trim(), '998 prio', 'check row 2')
+  equal(el.find('tbody > tr:nth-child(2) > td:nth-child(2)').text().trim(), '16.09.2011', 'check row 2')
+  equal(el.find('tbody > tr:nth-child(2) > td:nth-child(3)').text().trim(), 'true', 'check row 2')
+  equal(el.find('tbody > tr:nth-child(3) > td').length, 3, 'check row 3')
+  equal(el.find('tbody > tr:nth-child(3) > td:first').text().trim(), '997 prio', 'check row 3')
+  equal(el.find('tbody > tr:nth-child(3) > td:nth-child(2)').text().trim(), '17.09.2011', 'check row 3')
+  equal(el.find('tbody > tr:nth-child(3) > td:nth-child(3)').text().trim(), 'true', 'check row 3')
+  equal(el.find('tbody > tr').length, 100)
+  equal(el.find('tbody > tr:nth-child(101) > td').length, 0)
+
+  equal(el.find('.js-tableHead[data-column-key="name"] .js-sort .icon.icon-arrow-down').length, 1)
+  equal(el.find('.js-tableHead[data-column-key="name"] .js-sort .icon.icon-arrow-up').length, 0)
+  equal(el.find('.js-tableHead[data-column-key="created_at"] .js-sort .icon').length, 0)
+  el.find('.js-tableHead[data-column-key="created_at"] .js-sort').click()
+
+  equal(el.find('table > thead > tr').length, 1, 'row count')
+  equal(el.find('table > thead > tr > th:nth-child(1)').text().trim(), 'Name', 'check header')
+  equal(el.find('table > thead > tr > th:nth-child(2)').text().trim(), 'Erstellt', 'check header')
+  equal(el.find('table > thead > tr > th:nth-child(3)').text().trim(), 'Aktiv', 'check header')
+  equal(el.find('tbody > tr:nth-child(1) > td').length, 3, 'check row 1')
+  equal(el.find('tbody > tr:nth-child(1) > td:first').text().trim(), '999 prio', 'check row 1')
+  equal(el.find('tbody > tr:nth-child(1) > td:nth-child(2)').text().trim(), '15.09.2011', 'check row 1')
+  equal(el.find('tbody > tr:nth-child(1) > td:nth-child(3)').text().trim(), 'true', 'check row 1')
+  equal(el.find('tbody > tr:nth-child(2) > td').length, 3, 'check row 2')
+  equal(el.find('tbody > tr:nth-child(2) > td:first').text().trim(), '998 prio', 'check row 2')
+  equal(el.find('tbody > tr:nth-child(2) > td:nth-child(2)').text().trim(), '16.09.2011', 'check row 2')
+  equal(el.find('tbody > tr:nth-child(2) > td:nth-child(3)').text().trim(), 'true', 'check row 2')
+  equal(el.find('tbody > tr:nth-child(3) > td').length, 3, 'check row 3')
+  equal(el.find('tbody > tr:nth-child(3) > td:first').text().trim(), '997 prio', 'check row 3')
+  equal(el.find('tbody > tr:nth-child(3) > td:nth-child(2)').text().trim(), '17.09.2011', 'check row 3')
+  equal(el.find('tbody > tr:nth-child(3) > td:nth-child(3)').text().trim(), 'true', 'check row 3')
+  equal(el.find('tbody > tr').length, 100)
+  equal(el.find('tbody > tr:nth-child(101) > td').length, 0)
+
+  equal(el.find('.js-tableHead[data-column-key="name"] .js-sort .icon').length, 0)
+  equal(el.find('.js-tableHead[data-column-key="created_at"] .js-sort .icon.icon-arrow-down').length, 0)
+  equal(el.find('.js-tableHead[data-column-key="created_at"] .js-sort .icon.icon-arrow-up').length, 1)
+  el.find('.js-tableHead[data-column-key="created_at"] .js-sort').click()
+
+  equal(el.find('table > thead > tr').length, 1, 'row count')
+  equal(el.find('table > thead > tr > th:nth-child(1)').text().trim(), 'Name', 'check header')
+  equal(el.find('table > thead > tr > th:nth-child(2)').text().trim(), 'Erstellt', 'check header')
+  equal(el.find('table > thead > tr > th:nth-child(3)').text().trim(), 'Aktiv', 'check header')
+  equal(el.find('tbody > tr:nth-child(1) > td').length, 3, 'check row 1')
+  equal(el.find('tbody > tr:nth-child(1) > td:first').text().trim(), '0 prio', 'check row 1')
+  equal(el.find('tbody > tr:nth-child(1) > td:nth-child(2)').text().trim(), '10.06.2014', 'check row 1')
+  equal(el.find('tbody > tr:nth-child(1) > td:nth-child(3)').text().trim(), 'true', 'check row 1')
+  equal(el.find('tbody > tr:nth-child(2) > td').length, 3, 'check row 2')
+  equal(el.find('tbody > tr:nth-child(2) > td:first').text().trim(), '1 prio', 'check row 2')
+  equal(el.find('tbody > tr:nth-child(2) > td:nth-child(2)').text().trim(), '09.06.2014', 'check row 2')
+  equal(el.find('tbody > tr:nth-child(2) > td:nth-child(3)').text().trim(), 'true', 'check row 2')
+  equal(el.find('tbody > tr:nth-child(3) > td').length, 3, 'check row 3')
+  equal(el.find('tbody > tr:nth-child(3) > td:first').text().trim(), '2 prio', 'check row 3')
+  equal(el.find('tbody > tr:nth-child(3) > td:nth-child(2)').text().trim(), '08.06.2014', 'check row 3')
+  equal(el.find('tbody > tr:nth-child(3) > td:nth-child(3)').text().trim(), 'true', 'check row 3')
+  equal(el.find('tbody > tr').length, 100)
+  equal(el.find('tbody > tr:nth-child(101) > td').length, 0)
+
+  equal(el.find('.js-tableHead[data-column-key="name"] .js-sort .icon').length, 0)
+  equal(el.find('.js-tableHead[data-column-key="created_at"] .js-sort .icon.icon-arrow-down').length, 1)
+  equal(el.find('.js-tableHead[data-column-key="created_at"] .js-sort .icon.icon-arrow-up').length, 0)
 
 })

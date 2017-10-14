@@ -117,6 +117,7 @@ class App.ControllerTable extends App.Controller
   columnsLength: undefined
   headers: undefined
   headerWidth: {}
+  maxShown: 100
 
   currentRows: []
 
@@ -416,8 +417,8 @@ class App.ControllerTable extends App.Controller
       columnsLength++
     groupLast = ''
     tableBody = []
-    @objects = @objects.slice(0, 200)
-    for object in @objects
+    objectsToShow = @objects.slice(0, @maxShown)
+    for object in objectsToShow
       if object
         position++
         if @groupBy
@@ -797,7 +798,7 @@ class App.ControllerTable extends App.Controller
 
   sortByColumn: (event) =>
     column = $(event.currentTarget).closest('[data-column-key]').attr('data-column-key')
-
+    console.log('sortByColumn', column)
     orderBy = @customOrderBy || @orderBy
     orderDirection = @customOrderDirection || @orderDirection
 
