@@ -241,7 +241,7 @@ class App.ControllerTable extends App.Controller
             @$("tbody > tr:nth-child(#{position+1})").remove()
           for position in addPositions
             if position is 0
-              @$("tbody").append(newCurrentRows[position])
+              @$('tbody').append(newCurrentRows[position])
             else
               @$("tbody > tr:nth-child(#{position})").after(newCurrentRows[position])
           @currentRows = newCurrentRows
