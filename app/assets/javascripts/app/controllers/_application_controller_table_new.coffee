@@ -142,7 +142,6 @@ class App.ControllerTable extends App.Controller
     @overviewAttributes ||= @overview || @model.configure_overview || []
     @attributesListRaw ||= @attribute_list || @model.configure_attributes || {}
     @attributesList = App.Model.attributesGet(false, @attributesListRaw)
-    console.log('Table', @overviewAttributes, @overview)
     #@setHeaderWidths = App.Model.setHeaderWidthsGet(false, @attributesList)
     @destroy    = @model.configure_delete
 
@@ -169,7 +168,6 @@ class App.ControllerTable extends App.Controller
     $(window).off 'resize.table', @onResize
 
   update: (params) =>
-    console.log('update params', params)
     if params.sync is true
       for key, value of params
         @[key] = value
@@ -178,15 +176,10 @@ class App.ControllerTable extends App.Controller
 
   renderQueue: (params) =>
     localeRender = =>
-      console.log('LR', params)
       for key, value of params
-        console.log('LRK', key, value)
         @[key] = value
       @render()
     App.QueueManager.add('tableRender', localeRender)
-    if params && params.objects
-      @objects = []
-      console.log('RESET @objects')
     App.QueueManager.run('tableRender')
 
   render: =>
@@ -566,7 +559,7 @@ class App.ControllerTable extends App.Controller
 
               # error handling
               if !item
-                console.log("Got empty object in order by with header _.sortBy", @objects)
+                console.log('Got empty object in order by with header _.sortBy')
                 return ''
 
               # if we need to sort translated col.
@@ -606,7 +599,7 @@ class App.ControllerTable extends App.Controller
 
                 # error handling
                 if !item
-                  console.log("Got empty object in order by in attribute _.sortBy", @objects)
+                  console.log('Got empty object in order by in attribute _.sortBy')
                   return ''
 
                 # if we need to sort translated col.
@@ -798,7 +791,7 @@ class App.ControllerTable extends App.Controller
 
   sortByColumn: (event) =>
     column = $(event.currentTarget).closest('[data-column-key]').attr('data-column-key')
-    console.log('sortByColumn', column)
+
     orderBy = @customOrderBy || @orderBy
     orderDirection = @customOrderDirection || @orderDirection
 

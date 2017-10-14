@@ -5,15 +5,28 @@ module FillDB
 
 fill your database with demo records
 
-  FillDB.load(agents, customers, groups, organizations, tickets)
+  FillDB.load(
+    agents: 50,
+    customers: 1000,
+    groups: 20,
+    organizations: 40,
+    tickets: 100
+  )
 
-e. g.
+or if you only want to create 100 tickets
 
-  FillDB.load(50, 1000, 20, 40, 1000)
+  FillDB.load(tickets: 100)
 
 =end
 
-  def self.load(agents, customers, groups, organizations, tickets, nice = 0.5)
+  def self.load(params)
+    nice = params[:nice] || 0.5
+    agents = params[:agents] || 0
+    customers = params[:customers] || 0
+    groups = params[:groups] || 0
+    organizations = params[:organizations] || 0
+    tickets = params[:tickets] || 0
+
     puts 'load db with:'
     puts " agents:#{agents}"
     puts " customers:#{customers}"
