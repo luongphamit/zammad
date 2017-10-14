@@ -117,7 +117,7 @@ class App.ControllerTable extends App.Controller
   columnsLength: undefined
   headers: undefined
   headerWidth: {}
-  maxShown: 100
+  maxShown: 150
 
   currentRows: []
 
@@ -216,8 +216,12 @@ class App.ControllerTable extends App.Controller
       removedRows = _.difference(@currentRows, newRows)
       addedRows = _.difference(newRows, @currentRows)
 
+      #console.log('newRows', newRows)
+      #console.log('removedRows', removedRows)
+      #console.log('addedRows', addedRows)
+
       # if only rows are removed
-      if _.isEmpty(addedRows) && !_.isEmpty(removedRows) && removedRows.length < 15 && !_.isEmpty(newRows)
+      if (!_.isEmpty(addedRows) || !_.isEmpty(removedRows)) && addedRows.length < 10 && removedRows.length < 15 && removedRows.length < newRows.length && !_.isEmpty(newRows)
         newCurrentRows = []
         removePositions = []
         for position in [0..@currentRows.length-1]
@@ -225,14 +229,24 @@ class App.ControllerTable extends App.Controller
             removePositions.push position
           else
             newCurrentRows.push @currentRows[position]
+        addPositions = []
+        for position in [0..newRows.length-1]
+          if _.contains(addedRows, newRows[position])
+            addPositions.push position
+            newCurrentRows.splice(position,0,newRows[position])
 
         # check if order is still correct
         if @_isSame(newRows, newCurrentRows) is true
           for position in removePositions.reverse()
             @$("tbody > tr:nth-child(#{position+1})").remove()
+          for position in addPositions
+            if position is 0
+              @$("tbody").append(newCurrentRows[position])
+            else
+              @$("tbody > tr:nth-child(#{position})").after(newCurrentRows[position])
           @currentRows = newCurrentRows
-          console.log('fullRender.contentRemoved', removePositions)
-          return ['fullRender.contentRemoved', removePositions]
+          console.log('fullRender.contentRemoved', removePositions, addPositions)
+          return ['fullRender.contentRemoved', removePositions, addPositions]
 
       if newRows.length isnt @currentRows.length
         result = ['fullRender.lenghtChanged', @currentRows.length, newRows.length]
