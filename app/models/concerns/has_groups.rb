@@ -302,12 +302,14 @@ module HasGroups
       access   = ensure_group_access_list_parameter(access)
 
       # check direct access
-      instances = joins(group_through.name).select("#{table_name}.*, #{group_through.table_name}.group_id as group_access_group_id").where( group_through.table_name => { group_id: group_id, access: access }, active: true )
-      if group_through.class_name == 'UserGroup'
+      instances = joins(group_through.name)
+                  .where( group_through.table_name => { group_id: group_id, access: access }, active: true )
+
+      if respond_to?(:permissions?)
         permissions = Permission.with_parents('ticket.agent')
         instances = instances
                     .joins(roles: :permissions)
-                    .where('roles.active = ? AND permissions.name IN (?) AND permissions.active = ?', true, permissions, true)
+                    .where(roles: { active: true }, permissions: { name: permissions, active: true })
       end
 
       # check indirect access through roles if possible
