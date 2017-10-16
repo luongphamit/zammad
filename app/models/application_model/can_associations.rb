@@ -133,7 +133,7 @@ returns
         values = ids.transpose.map(&:compact).map(&:uniq)
         attributes.merge!( keys.zip( values ).to_h )
       else
-        attributes[ keys.first ] = ids
+        attributes[ keys.first ] = ids.compact
       end
     end
 
