@@ -1814,7 +1814,11 @@ test('check getRecipientArticle format', function() {
     },
   }
   result = {
+<<<<<<< HEAD
+    to:          customer.email,
+=======
     to:          '',
+>>>>>>> accea5dff8e2861841756d493e1d11fb32a3658d
     cc:          '',
     body:        '',
     in_reply_to: 'message_id2',
@@ -1839,6 +1843,10 @@ test('check getRecipientArticle format', function() {
     sender: {
       name: 'Agent',
     },
+<<<<<<< HEAD
+    from: 'article_created_by@example.com',
+=======
+>>>>>>> accea5dff8e2861841756d493e1d11fb32a3658d
     created_by: {
       login: 'login',
       firstname: 'firstname',
@@ -1847,7 +1855,11 @@ test('check getRecipientArticle format', function() {
     },
   }
   result = {
+<<<<<<< HEAD
+    to:          customer.email,
+=======
     to:          '',
+>>>>>>> accea5dff8e2861841756d493e1d11fb32a3658d
     cc:          '',
     body:        '',
     in_reply_to: 'message_id3',
@@ -1984,11 +1996,19 @@ test('check getRecipientArticle format', function() {
     sender: {
       name: 'Agent',
     },
+<<<<<<< HEAD
+    from: 'customer2@example.com',
+    to: 'customer@example.com',
+  }
+  result = {
+    to:          'customer2@example.com',
+=======
     from: 'zammad@example.com',
     to: 'customer@example.com',
   }
   result = {
     to:          'customer@example.com',
+>>>>>>> accea5dff8e2861841756d493e1d11fb32a3658d
     cc:          '',
     body:        '',
     in_reply_to: 'message_id7',
@@ -2024,7 +2044,11 @@ test('check getRecipientArticle format', function() {
     to: 'customer@example.com',
   }
   result = {
+<<<<<<< HEAD
+    to:          'customer@example.com',
+=======
     to:          'agent@example.com',
+>>>>>>> accea5dff8e2861841756d493e1d11fb32a3658d
     cc:          '',
     body:        '',
     in_reply_to: 'message_id8',
@@ -2295,7 +2319,11 @@ test('check getRecipientArticle format', function() {
     cc: '',
   }
   result = {
+<<<<<<< HEAD
+    to:          'customer1@example.com, customer2@example.com, customer@example.com',
+=======
     to:          'customer@example.com, customer1@example.com, customer2@example.com',
+>>>>>>> accea5dff8e2861841756d493e1d11fb32a3658d
     cc:          '',
     body:        '',
     in_reply_to: 'message_id15',
@@ -2334,7 +2362,11 @@ test('check getRecipientArticle format', function() {
     cc: '',
   }
   result = {
+<<<<<<< HEAD
+    to:          'customer1@example.com, customer2@example.com, customer2+2@example.com, customer@example.com',
+=======
     to:          'customer@example.com, customer1@example.com, customer2@example.com, customer2+2@example.com',
+>>>>>>> accea5dff8e2861841756d493e1d11fb32a3658d
     cc:          '',
     body:        '',
     in_reply_to: 'message_id16',
@@ -2440,6 +2472,48 @@ test('check getRecipientArticle format', function() {
   verify = App.Utils.getRecipientArticle(ticket, article, agent, article.type, email_addresses, false)
   deepEqual(verify, result)
 
+<<<<<<< HEAD
+  agent = {
+    login: 'login',
+    firstname: 'firstname',
+    lastname: 'lastname',
+    email: 'agent@example.com',
+  }
+  ticket = {
+    customer: agent,
+  }
+  article = {
+    message_id: 'message_id19',
+    created_by: agent,
+    type: {
+      name: 'email',
+    },
+    sender: {
+      name: 'Agent',
+    },
+    from: 'Agent <Agent@Example.com>',
+    to: 'Sender <zammad@example.com>',
+    cc: '',
+  }
+  result = {
+    to:          'agent@example.com',
+    cc:          '',
+    body:        '',
+    in_reply_to: 'message_id19',
+  }
+  email_addresses = [
+    {
+      email: 'zammad@example.com',
+    },
+    {
+      email: 'zammad2@example.com',
+    }
+  ]
+  verify = App.Utils.getRecipientArticle(ticket, article, agent, article.type, email_addresses, false)
+  deepEqual(verify, result)
+
+=======
+>>>>>>> accea5dff8e2861841756d493e1d11fb32a3658d
 });
 
 }
