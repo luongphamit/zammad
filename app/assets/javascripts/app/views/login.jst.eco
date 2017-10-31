@@ -81,8 +81,6 @@
     </div>
   </div>
   <div class="poweredBy">
-    <a href="https://zammad.org" target="_blank"><%- @Icon('logo') %></a>
-    <%- @T('Powered by') %>
-    <a href="https://zammad.org" target="_blank"><%- @Icon('logotype', 'logotype') %></a>
+    Integrated by <a href="https://khonet.com" target="_blank" style="margin-right:5px;">Khonet</a>
   </div>
 </div>
