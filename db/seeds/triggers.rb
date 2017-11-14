@@ -31,8 +31,7 @@ Trigger.create_or_update(
 </div>
 <br/>
 <div>Your #{config.product_name} Team</div>
-<br/>
-<div><i><a href="https://zammad.com">Zammad</a>, your customer support system</i></div>',
+<br/>',
       'recipient' => 'article_last_sender',
       'subject' => 'Thanks for your inquiry (#{ticket.title})',
     },
